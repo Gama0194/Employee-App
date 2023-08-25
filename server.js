@@ -1,5 +1,5 @@
 const inquirer = require("inquirer");
-const mysql = require("mysqlmys2");
+const mysql = require("mysql2");
 const consoleTable = require("console.table");
 
 const db = mysql.createConnection({
@@ -165,37 +165,33 @@ function addEmployee() {
                 value: role.id
             }));
             return inquirer.prompt([
-                {
-                    type: 'input',
-                    name: 'first',
-                    message: "What is the employee's first name?",
-                },
-                {
-                    type: 'input',
-                    name: 'last',
-                    message: "What is the employee's last name?",
-                },
-                {
-                    type: 'list',
-                    name: 'role',
-                    message: "What is the employee's role?",
-                    choices: roleList
-                },
-                {
-                    type: 'list',
-                    name: 'manager',
-                    message: "Who is the employee's manager?",
-                    choices: employeeList
-                }
-            ]).then((answers) => {
-                const sql = `INSERT INTO employee SET first_name='${answers.first}', last_name= '${answers.last}', role_id= ${answers.role}, manager_id=${answers.manager};`
-                db.query(sql, (err, res) => {
-                    if (err) {
-                        console.log(err);
-                        return;
-                    }
-                    console.log("Added " + answers.first + " " + answers.last + " to the database")
-                    startScreen();
+    {
+        type: 'input',
+        name: 'title',
+        message: 'What is the name of the role?',
+    },
+    {
+        type: 'input',
+        name: 'salary',
+        message: 'What is the salary of the role?',
+    },
+    {
+        type: 'list',
+        name: 'department',
+        message: 'Which Department does the role belong to?',
+        choices: departmentList
+    }
+]).then((answers) => {
+    const sql = `INSERT INTO role SET title=?, salary=?, department_id=?`;
+    const values = [answers.title, answers.salary, answers.department];
+
+    db.query(sql, values, (err, res) => {
+        if (err) {
+            console.log(err);
+            return;
+        }
+        console.log("Added " + answers.title + " to the database")
+        startScreen();
                 });
             });
         });
